@@ -1,0 +1,162 @@
+<kt-portlet>
+	<kt-portlet-header [title]="getComponentTitle()" [class]="'kt-portlet__head--lg'" [viewLoading$]="loading$">
+		<ng-container ktPortletTools>
+			<a href="javascript:;" class="btn btn-secondary kt-margin-r-10" (click)="backPage()" mat-raised-button matTooltip="Back to the vouchers list">
+				<i class="la la-arrow-left"></i>
+				<span class="kt-hidden-mobile">Back</span>
+			</a>
+		</ng-container>
+	</kt-portlet-header>
+	<kt-portlet-body>
+		<mat-tab-group [(selectedIndex)]="selectedTab" *ngIf="voucher">
+			<mat-tab label="Basic info">
+				<ng-template matTabContent>
+					<div *ngIf="voucher">
+						<!--begin::Form-->
+						<form [formGroup]="voucherForm" class="kt-form kt-form--group-seperator-dashed">
+
+							<kt-alert *ngIf="hasFormErrors" type="warn" [showCloseButton]="true" [duration]="10000" (close)="onAlertClose($event)">
+								There Something Error in The Form, Please Check and Submit Again!
+							</kt-alert>
+							<kt-alert *ngIf="hasIDErrors" type="warn" [showCloseButton]="true" [duration]="10000" (close)="onAlertClose($event)">
+								Sorry! The Duplicate Voucher ID, The Voucher ID must unique.
+							</kt-alert>
+
+							<div class="kt-form__section kt-form__section--first">
+
+								<div class="kt-form__group">
+									<div class="row">
+
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<input matInput placeholder="Enter Kode Voucher" formControlName="vid">
+												<mat-error>
+													Kode Voucher is
+													<strong>required</strong>
+												</mat-error>
+												<mat-hint align="start">Please enter
+													<strong>Kode Voucher</strong>
+												</mat-hint>
+											</mat-form-field>
+										</div>
+
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<input matInput placeholder="Enter Voucher Name" formControlName="vname">
+												<mat-error>
+													Voucher Name is
+													<strong>required</strong>
+												</mat-error>
+												<mat-hint align="start">Please enter
+													<strong>Voucher Name</strong>
+												</mat-hint>
+											</mat-form-field>
+										</div>
+
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field>
+												<input matInput [matDatepicker]="from" formControlName="from" placeholder="From date">
+												<mat-datepicker-toggle matSuffix [for]="from"></mat-datepicker-toggle>
+												<mat-datepicker #from></mat-datepicker>
+											</mat-form-field>
+										</div>
+
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field>
+												<input matInput [matDatepicker]="to" formControlName="to" placeholder="To date">
+												<mat-datepicker-toggle matSuffix [for]="to"></mat-datepicker-toggle>
+												<mat-datepicker #to></mat-datepicker>
+											</mat-form-field>
+										</div>
+
+									</div>
+								</div>
+
+								<div class="kt-form__group">
+									<div class="row">
+
+										<div class="col-md-4 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<input appMycurrency matInput placeholder="Enter Voucher Value" formControlName="value">
+												<mat-error>
+													Voucher Value is
+													<strong>required</strong>
+												</mat-error>
+												<mat-hint align="start">Please enter
+													<strong>Voucher Value</strong>
+												</mat-hint>
+											</mat-form-field>
+										</div>
+
+										<div class="col-md-4 kt-margin-bottom-10-mobile">
+											<div>Type:</div>
+											<mat-radio-group formControlName="type" class="example-radio-group" style="display: inline-block;">
+												<mat-radio-button class="example-radio-button" value="Percent">Percent</mat-radio-button>
+												<mat-radio-button class="example-radio-button" value="Amount">Amount</mat-radio-button>
+											</mat-radio-group>
+										</div>
+
+										<div class="col-md-4 kt-margin-bottom-10-mobile">
+											<div>Status:</div>
+											<mat-radio-group formControlName="status" class="example-radio-group" style="display: inline-block;">
+												<mat-radio-button class="example-radio-button" value="1" *ngIf="isAdmin !== 3">Enable</mat-radio-button>
+												<mat-radio-button class="example-radio-button" value="0">Disable</mat-radio-button>
+											</mat-radio-group>
+										</div>
+
+									</div>
+								</div>
+
+								<div class="kt-form__group">
+									<div class="row">
+
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<input matInput placeholder="Enter Limit Value" formControlName="limit">
+											</mat-form-field>
+										</div>
+
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<input matInput placeholder="Enter Quota Value" formControlName="quota">
+											</mat-form-field>
+										</div>
+
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<mat-select  placeholder="Member Type (*sedang di non aktifkan)">
+													<mat-option value="1">Regular</mat-option>
+													<mat-option value="2">VIP</mat-option>
+												</mat-select>
+											</mat-form-field>
+										</div>
+
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<mat-select formControlName="dtype" placeholder="Discount Type">
+													<mat-option value="1">Pembayaran</mat-option>
+													<mat-option value="2">Ongkir</mat-option>
+												</mat-select>
+											</mat-form-field>
+										</div>
+
+									</div>
+								</div>
+
+							</div>
+						</form>
+					</div>
+
+					<!--end::Form-->
+				</ng-template>
+			</mat-tab>
+		</mat-tab-group>
+	</kt-portlet-body>
+	<kt-portlet-header [class]="'kt-portlet__head--lg'" [viewLoading$]="loading$">
+		<ng-container ktPortletTools>
+			<a href="javascript:;" class="btn btn-primary kt-margin-r-10" color="primary" (click)="onSumbit(false)" mat-raised-button matTooltip="Save">
+				<span class="kt-hidden-mobile">Save</span>
+			</a>
+		</ng-container>
+	</kt-portlet-header>
+</kt-portlet>

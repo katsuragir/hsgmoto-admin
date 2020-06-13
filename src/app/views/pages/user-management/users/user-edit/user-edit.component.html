@@ -1,0 +1,244 @@
+<kt-portlet>
+	<kt-portlet-header [title]="getComponentTitle()" [class]="'kt-portlet__head--lg'" [viewLoading$]="loading$">
+		<ng-container ktPortletTools>
+			<a [routerLink]="['/vp-admin/user-management/users']" class="btn btn-secondary kt-margin-r-10" mat-raised-button matTooltip="Back to the users list">
+				<i class="la la-arrow-left"></i>
+				<span class="kt-hidden-mobile">Back</span>
+			</a>
+			<!--
+			<a href="javascript:;" class="btn btn-secondary kt-margin-r-10" (click)="reset()" [disabled]="selectedTab !== 0" mat-raised-button matTooltip="Reset changes">
+				<i class="la la-cog"></i>
+				<span class="kt-hidden-mobile">Reset</span>
+			</a>
+			-->
+			<a *ngIf="user.id" href="javascript:;" class="btn btn-primary kt-margin-r-10" color="primary" (click)="onSave(false)" mat-raised-button matTooltip="Save & Continue">
+				<span class="kt-hidden-mobile">Save</span>
+			</a>
+			<a *ngIf="!user.id" href="javascript:;" class="btn btn-primary kt-margin-r-10" color="primary" (click)="onSumbit(false)" mat-raised-button matTooltip="Save & Continue">
+				<span class="kt-hidden-mobile">Save</span>
+			</a>
+		</ng-container>
+	</kt-portlet-header>
+
+	<kt-portlet-body>
+		<mat-tab-group [(selectedIndex)]="selectedTab">
+			<mat-tab>
+				<ng-template mat-tab-label>
+					<i class="mat-tab-label-icon fa fa-user"></i>
+					Basic info
+				</ng-template>
+				<ng-template matTabContent>
+					<!--begin::Form-->
+					<div *ngIf="user">
+						<form [formGroup]="userForm" class="kt-form kt-form--group-seperator-dashed">
+
+							<kt-alert *ngIf="hasFormErrors" type="warn" [showCloseButton]="true" [duration]="10000" (close)="onAlertClose($event)">
+								Oh snap! Change a few things up and try submitting again.
+							</kt-alert>
+							<kt-alert *ngIf="hasMatchErrors" type="warn" [showCloseButton]="true" [duration]="10000" (close)="onAlertClose($event)">
+								Password not match.
+							</kt-alert>
+							<kt-alert *ngIf="hasEmailErrors" type="warn" [showCloseButton]="true" [duration]="10000" (close)="onAlertClose($event)">
+								Email Already Register.
+							</kt-alert>
+							<div class="kt-form__section kt-form__section--first">
+								<div class="form-group kt-form__group row" *ngIf="!user.id">
+									<div class="col-lg-3 kt-margin-bottom-20-mobile">
+										<mat-form-field class="mat-form-field-fluid">
+											<input matInput placeholder="Enter Username" formControlName="username"/>
+											<mat-error>Username is
+												<strong>required</strong>
+											</mat-error>
+											<mat-hint align="start">Please enter
+												<strong>Username</strong>
+											</mat-hint>
+										</mat-form-field>
+									</div>
+									<div class="col-lg-3 kt-margin-bottom-20-mobile">
+										<mat-form-field class="mat-form-field-fluid">
+											<input matInput placeholder="Enter Full Name" formControlName="fullname"/>
+											<mat-error>Full Name is
+												<strong>required</strong>
+											</mat-error>
+											<mat-hint align="start">Please enter
+												<strong>Full Name</strong>
+											</mat-hint>
+										</mat-form-field>
+									</div>
+
+									<div class="col-lg-3 kt-margin-bottom-20-mobile">
+										<mat-form-field class="mat-form-field-fluid">
+											<input type="email" matInput placeholder="Enter Email" formControlName="email"/>
+											<mat-error>Email is
+												<strong>required</strong>
+											</mat-error>
+											<mat-hint align="start">Please enter
+												<strong>Email</strong>
+											</mat-hint>
+										</mat-form-field>
+									</div>
+									<div class="col-lg-3 kt-margin-bottom-20-mobile">
+										<mat-form-field class="mat-form-field-fluid">
+											<input matInput placeholder="Enter Occupation" formControlName="occupation"/>
+											<mat-hint align="start">Please enter
+												<strong>Occupation</strong>
+											</mat-hint>
+										</mat-form-field>
+									</div>
+								</div>
+								<div class="form-group kt-form__group row" *ngIf="user.id">
+									<div class="col-lg-4 kt-margin-bottom-20-mobile">
+										<mat-form-field class="mat-form-field-fluid">
+											<input matInput placeholder="Enter Username" formControlName="username"/>
+											<mat-error>Username is
+												<strong>required</strong>
+											</mat-error>
+											<mat-hint align="start">Please enter
+												<strong>Username</strong>
+											</mat-hint>
+										</mat-form-field>
+									</div>
+									<div class="col-lg-4 kt-margin-bottom-20-mobile">
+										<mat-form-field class="mat-form-field-fluid">
+											<input matInput placeholder="Enter Full Name" formControlName="fullname"/>
+											<mat-error>Full Name is
+												<strong>required</strong>
+											</mat-error>
+											<mat-hint align="start">Please enter
+												<strong>Full Name</strong>
+											</mat-hint>
+										</mat-form-field>
+									</div>
+
+									<div class="col-lg-4 kt-margin-bottom-20-mobile">
+										<mat-form-field class="mat-form-field-fluid">
+											<input type="email" matInput placeholder="Enter Email" formControlName="email"/>
+											<mat-error>Email is
+												<strong>required</strong>
+											</mat-error>
+											<mat-hint align="start">Please enter
+												<strong>Email</strong>
+											</mat-hint>
+										</mat-form-field>
+									</div>
+								</div>
+								<div class="form-group kt-form__group row" *ngIf="!user.id">
+
+									<div class="col-lg-3 kt-margin-bottom-20-mobile">
+										<mat-form-field class="mat-form-field-fluid">
+											<input matInput placeholder="Enter Company Name" formControlName="companyName"/>
+											<mat-hint align="start">Please enter
+												<strong>Company Name</strong>
+											</mat-hint>
+										</mat-form-field>
+									</div>
+									<div class="col-lg-3 kt-margin-bottom-20-mobile">
+										<mat-form-field class="mat-form-field-fluid">
+											<mat-select placeholder="Select Role" formControlName="role">
+												<mat-option *ngFor="let role of unassignedRoles" value="{{ role.id }}">{{role.title}}</mat-option>
+											</mat-select>
+											<mat-hint align="start">
+												<strong>Select Role</strong>
+											</mat-hint>
+										</mat-form-field>
+									</div>
+									<div class="col-lg-3 kt-margin-bottom-20-mobile" >
+										<mat-form-field class="mat-form-field-fluid">
+											<input matInput type="password" id="password" autocomplete="off" placeholder="Enter Password" formControlName="password" />
+											<mat-error>Password is
+												<strong>required</strong>
+											</mat-error>
+											<mat-hint align="start">Please enter
+												<strong>Password</strong>
+											</mat-hint>
+										</mat-form-field>
+									</div>
+									<div class="col-lg-3 kt-margin-bottom-20-mobile">
+										<mat-form-field class="mat-form-field-fluid">
+											<input matInput type="password" placeholder="Confirm password" formControlName="confirmPassword" />
+											<mat-error>Confirm password is
+												<strong>required</strong>
+											</mat-error>
+											<mat-hint align="start">Please conirm
+												<strong>Password</strong>
+											</mat-hint>
+										</mat-form-field>
+									</div>
+								</div>
+								<div class="form-group kt-form__group row" *ngIf="user.id">
+									<div class="col-lg-3 kt-margin-bottom-20-mobile">
+										<mat-form-field class="mat-form-field-fluid">
+											<input matInput placeholder="Enter Occupation" formControlName="occupation"/>
+											<mat-hint align="start">Please enter
+												<strong>Occupation</strong>
+											</mat-hint>
+										</mat-form-field>
+									</div>
+									<div class="col-lg-3 kt-margin-bottom-20-mobile">
+										<mat-form-field class="mat-form-field-fluid">
+											<mat-select placeholder="Select Role" formControlName="role">
+												<mat-option *ngFor="let role of unassignedRoles" value="{{ role.id }}">{{role.title}}</mat-option>
+											</mat-select>
+											<mat-hint align="start">
+												<strong>Select Role</strong>
+											</mat-hint>
+										</mat-form-field>
+									</div>
+									<div class="col-lg-3 kt-margin-bottom-20-mobile">
+										<mat-form-field class="mat-form-field-fluid">
+											<input matInput placeholder="Enter Company Name" formControlName="companyName"/>
+											<mat-hint align="start">Please enter
+												<strong>Company Name</strong>
+											</mat-hint>
+										</mat-form-field>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+					<!--end::Form-->
+				</ng-template>
+			</mat-tab>
+			<!--
+			<mat-tab [disabled]="!user || !user.id">
+				<ng-template mat-tab-label>
+					<i class="mat-tab-label-icon fa fa-address-book"></i>
+					User address
+				</ng-template>
+				<ng-template matTabContent>
+					<kt-address [(addressSubject)]="addressSubject"></kt-address>
+				</ng-template>
+			</mat-tab>
+
+			<mat-tab [disabled]="!user || !user.id">
+				<ng-template mat-tab-label>
+					<i class="mat-tab-label-icon fab fa-facebook"></i>
+					Social Nerworks
+				</ng-template>
+				<ng-template matTabContent>
+					<kt-social-networks [(socialNetworksSubject)]="soicialNetworksSubject"></kt-social-networks>
+				</ng-template>
+			</mat-tab>
+
+			<mat-tab *ngIf="user" [disabled]="!user || !user.id">
+				<ng-template mat-tab-label>
+					<i class="mat-tab-label-icon fa fa-unlock"></i>
+					User roles
+				</ng-template>
+				<ng-template matTabContent>
+					<kt-user-roles-list [(rolesSubject)]="rolesSubject"></kt-user-roles-list>
+				</ng-template>
+			</mat-tab>
+			-->
+			<mat-tab *ngIf="user" [disabled]="!user || !user.id">
+				<ng-template mat-tab-label>
+					<i class="mat-tab-label-icon fa fa-exchange-alt"></i>
+					Change password
+				</ng-template>
+				<ng-template matTabContent>
+					<kt-change-password [userId]="user.id"></kt-change-password>
+				</ng-template>
+			</mat-tab>
+		</mat-tab-group>
+	</kt-portlet-body>
+</kt-portlet>

@@ -1,0 +1,122 @@
+<kt-portlet>
+	<kt-portlet-header [title]="'List Invoice'" [class]="'kt-portlet__head--lg'" [viewLoading$]="dataSource.loading$">
+		<ng-container ktPortletTools>
+			<a [routerLink]="['/vp-admin/customers/customer']" class="btn btn-secondary kt-margin-r-10"  mat-raised-button matTooltip="Back to the categories list">
+				<i class="la la-arrow-left"></i>
+				<span class="kt-hidden-mobile">Back</span>
+			</a>
+		</ng-container>
+	</kt-portlet-header>
+	<!-- end::Header -->
+</kt-portlet>
+<div class="row">
+<!--List Invoice-->
+<div class="col-lg-6">
+<kt-portlet >
+	<kt-portlet-body>
+		<!-- start::FILTERS & GROUP ACTIONS -->
+		<div class="kt-form">
+			<!-- start::FILTERS -->
+			<div class="kt-form__filtration">
+				<div class="row align-items-center">
+					<div class="col-md-4 kt-margin-bottom-10-mobile">
+						<mat-form-field class="mat-form-field-fluid">
+							<input matInput placeholder="Search invoice" #searchInput placeholder="Search">
+							<mat-hint align="start">
+								<strong>Search</strong> in all fields
+							</mat-hint>
+						</mat-form-field>
+					</div>
+				</div>
+			</div>
+			<!-- end::FILTERS -->
+
+			<!-- start::GROUP ACTIONS -->
+			<!-- Group actions list: 'Delete selected' | 'Fetch selected' | 'Update status for selected' -->
+			<!-- Group actions are shared for all LISTS | See '../../_shared' folder -->
+			<div class="row align-items-center collapse kt-form__group-actions kt-margin-top-20 kt-margin-bottom-20" [ngClass]="{'show' : selection.selected.length > 0}">
+				<div class="col-xl-12">
+					<div class="kt-form__group kt-form__group--inline">
+						<div class="kt-form__label kt-form__label-no-wrap">
+							<label class="kt--font-bold kt-font-danger-">Selected records count: {{ selection.selected.length }}</label>
+						</div>
+						<div class="kt-form__control kt-form__group--inline">
+
+							<button mat-raised-button (click)="fetchCustomers()" matTooltip="Fetch selected customers" class="mat-button-mt-4">
+								<mat-icon>clear_all</mat-icon>
+								Fetch Selected Records
+							</button>&nbsp;<!-- Call 'fetch-entity-dialog' from _shared folder -->
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- end::GROUP ACTIONS -->
+		</div>
+		<!-- end::FILTERS & GROUP ACTIONS -->
+
+		<!-- MATERIAL TABLE | Binded to datasources -->
+		<!-- See off.documentations 'https://material.angular.io/components/table/overview' -->
+		<div class="mat-table__wrapper">
+			<!-- Checkbox Column -->
+			<!-- Table with selection -->
+			<!-- https://run.stackblitz.com/api/angular/v1?file=app%2Ftable-selection-example.ts -->
+			<mat-table class="lmat-elevation-z8"
+				#table
+				[dataSource]="dataSource"
+				matSort
+				#sort1="matSort"
+				matSortActive="id"
+				matSortDirection="asc"
+				matSortDisableClear
+				style="min-width: 0;">
+				<!-- Checkbox Column -->
+
+				<ng-container matColumnDef="Date">
+					<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 15%;">Date</mat-header-cell>
+					<mat-cell *matCellDef="let listinv" style="flex: 0 1 15%;">{{listinv.create_at | date: format }}</mat-cell>
+				</ng-container>
+
+				<ng-container matColumnDef="ID Order">
+					<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 12.5%;">Order ID</mat-header-cell>
+					<mat-cell *matCellDef="let listinv" style="flex: 0 1 12.5%;">
+							<span style="cursor: pointer;" (click)="viewOrder(listinv)" class="kt-id-order">{{listinv.id_order}}</span>
+					</mat-cell>
+				</ng-container>
+				<ng-container matColumnDef="Invoice">
+					<mat-header-cell *matHeaderCellDef mat-sort-header >Invoice</mat-header-cell>
+					<mat-cell *matCellDef="let listinv" >
+						<span style="cursor: pointer;" (click)="viewCart(listinv)" class="kt-id-order">{{listinv.invoice}}</span>
+					</mat-cell>
+				</ng-container>
+
+				<ng-container matColumnDef="Status">
+					<mat-header-cell *matHeaderCellDef mat-sort-header >Status</mat-header-cell>
+					<mat-cell *matCellDef="let listinv" >
+						<span style="cursor: pointer;" class="kt-badge kt-badge--inline kt-badge--pill kt-badge--{{ getItemCssClassByCondition(listinv.status) }} kt-badge--wide">{{ getItemConditionString(listinv.status) }}</span>
+					</mat-cell>
+				</ng-container>
+
+				<mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+				<mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+			</mat-table>
+
+			<div class="mat-table__message" *ngIf="customersResult.length === 0">No records found</div>
+			<div class="mat-table__message" *ngIf="dataSource.isPreloadTextViewed$ | async">Please wait....</div>
+		</div>
+
+		<!-- start: BOTTOM -->
+		<div class="mat-table__bottom">
+			<mat-spinner [diameter]="20" *ngIf="dataSource.loading$ | async"></mat-spinner>
+			<mat-paginator [pageSize]="25" [pageSizeOptions]="[25, 50, 100]" [length]="dataSource.paginatorTotal$ | async" [showFirstLastButtons]="true"></mat-paginator>
+		</div>
+		<!-- end: BOTTOM -->
+	</kt-portlet-body>
+	<!-- end::Body -->
+</kt-portlet>
+</div>
+<!--list inv end-->
+
+<div class="col-lg-6">
+	<kt-list-cart *ngIf="Cart === 1" [dataSource]="dataSource1"></kt-list-cart>
+</div>
+</div>

@@ -1,0 +1,214 @@
+<kt-portlet>
+
+		<kt-portlet-header [title]="'Orders list'" [class]="'kt-portlet__head--lg'" [viewLoading$]="dataSource.loading$">
+			<!--
+			<ng-container ktPortletTools>
+				<button [routerLink]="['../order/add']" mat-raised-button color="primary" matTooltip="Create new order">New Order</button>
+			</ng-container>
+			-->
+		</kt-portlet-header>
+		<!-- end::Header -->
+
+		<kt-portlet-body>
+			<!-- start::FILTERS & GROUP ACTIONS -->
+			<div class="kt-form">
+				<!-- start::FILTERS -->
+				<div class="kt-form__filtration">
+					<div class="row align-items-center">
+						<div class="col-md-2 kt-margin-bottom-10-mobile">
+
+							<div class="kt-form__control">
+								<mat-form-field>
+									<mat-select [(value)]="filterStatus" (selectionChange)="loadOrdersList()" class="mat-form-field mat-form-field-fluid">
+										<mat-option value="">All</mat-option>
+										<mat-option value="0">Waiting Payment</mat-option>
+										<mat-option value="1">Verification Payment</mat-option>
+										<mat-option value="2">Payment Accepted</mat-option>
+										<mat-option value="3">On Process</mat-option>
+										<mat-option value="4">Sending</mat-option>
+										<mat-option value="5">Order Received</mat-option>
+										<mat-option value="6">Cancel Order</mat-option>
+									</mat-select>
+									<mat-hint align="start">
+										<strong>Filter by Status</strong>
+									</mat-hint>
+								</mat-form-field>
+							</div>
+
+						</div>
+						<div class="col-md-4 kt-margin-bottom-10-mobile">
+							<mat-form-field class="mat-form-field-fluid">
+								<input matInput placeholder="Search catalog" #searchInput placeholder="Search">
+								<mat-hint align="start">
+									<strong>Search</strong> in all fields
+								</mat-hint>
+							</mat-form-field>
+						</div>
+						<div class="col-md-6 kt-margin-bottom-10-mobile">
+							<button (click)="report()" mat-raised-button color="primary" style="float: right;" matTooltip="Transaction Report">Transaction Report</button>
+						</div>
+					</div>
+				</div>
+				<!-- end::FILTERS -->
+
+				<!-- start::GROUP ACTIONS -->
+				<!-- Group actions list: 'Delete selected' | 'Fetch selected' | 'Update status for selected' -->
+				<!-- Group actions are shared for all LISTS | See '../../_shared' folder -->
+				<div class="row align-items-center collapse kt-form__group-actions kt-margin-top-20 kt-margin-bottom-20" [ngClass]="{'show' : selection.selected.length > 0}">
+					<div class="col-xl-12">
+						<div class="kt-form__group kt-form__group--inline">
+							<div class="kt-form__label kt-form__label-no-wrap">
+								<label class="kt--font-bold kt-font-danger-">Selected records count: {{ selection.selected.length }}</label>
+							</div>
+							<div class="kt-form__control kt-form__group--inline">
+								<button mat-raised-button color="accent" (click)="deleteOrders()" matTooltip="Delete selected orders" class="mat-button-mt-4">
+									<mat-icon>delete</mat-icon>
+									Delete All
+								</button>&nbsp;<!-- Call 'delete-entity-dialog' from _shared folder -->
+								<button mat-raised-button (click)="fetchOrders()" matTooltip="Fetch selected orders" class="mat-button-mt-4">
+									<mat-icon>clear_all</mat-icon>
+									Fetch Selected Records
+								</button>&nbsp;<!-- Call 'fetch-entity-dialog' from _shared folder -->
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- end::GROUP ACTIONS -->
+			</div>
+			<!-- end::FILTERS & GROUP ACTIONS -->
+
+			<!-- MATERIAL TABLE | Binded to datasources -->
+			<!-- See off.documentations 'https://material.angular.io/components/table/overview' -->
+			<div class="mat-table__wrapper">
+				<!-- Checkbox Column -->
+				<!-- Table with selection -->
+				<!-- https://run.stackblitz.com/api/angular/v1?file=app%2Ftable-selection-example.ts -->
+				<mat-table class="lmat-elevation-z8"
+					#table
+					[dataSource]="dataSource"
+					matSort
+					#sort1="matSort"
+
+					matSortDisableClear>
+
+					<ng-container matColumnDef="Order ID">
+						<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 10%;">Order ID</mat-header-cell>
+						<mat-cell *matCellDef="let order" style="flex: 0 1 10%;">
+							<!--<span *ngIf="order.status === 0;" style="cursor: pointer;" (click)="waitPay(order)" class="kt-id-order">{{ order.id_order }}</span>-->
+							<span style="cursor: pointer;" (click)="viewOrder(order.id_order)" class="kt-id-order">{{ order.id_order }}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="customer">
+						<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 15%;">Customer</mat-header-cell>
+						<mat-cell *matCellDef="let order" style="flex: 0 1 15%;">{{ order.customerName }}</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="courier">
+						<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 7%;">Shipment</mat-header-cell>
+						<mat-cell *matCellDef="let order" style="flex: 0 1 7%;">{{ order.courier }}</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="phone">
+						<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 11%;">Phone</mat-header-cell>
+						<mat-cell *matCellDef="let order" style="flex: 0 1 11%;">
+							<a (click)="reminder(order)" style="color: inherit; cursor: pointer;" class="kt-id-order" target="_blank">+{{ order.phone }}</a>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="total">
+						<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 10%;">Total</mat-header-cell>
+						<mat-cell *matCellDef="let order" style="flex: 0 1 10%;">
+							<span *ngIf="!order.amountv">Rp. {{order.total}}</span>
+							<span *ngIf="order.amountv"><del style="font-size: 12px; font-weight: 300; color:rgba(87, 87, 86, 0.911)">Rp. {{order.total}}</del> Rp. {{order.amountv}}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="payment">
+						<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 15%;">Payment</mat-header-cell>
+						<mat-cell *matCellDef="let order" style="flex: 0 1 15%;">
+							<span class="kt-badge kt-badge--inline kt-badge--pill kt-badge--success kt-badge--wide">{{ order.payment }}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="status">
+						<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 10%;">Status</mat-header-cell>
+						<mat-cell *matCellDef="let order"style="flex: 0 1 10%;">
+							<!--
+							<span *ngIf="order.status === 0;" style="cursor: pointer;" (click)="waitPay(order)" class="kt-badge kt-badge--inline kt-badge--pill kt-badge--{{ getItemCssClassByCondition(order.status) }} kt-badge--wide">{{ getItemConditionString(order.status) }}</span>
+
+							<span *ngIf="order.status === 4;" style="cursor: pointer;" (click)="comfPay(order.id_order)" class="kt-badge kt-badge--inline kt-badge--pill kt-badge--{{ getItemCssClassByCondition(order.status) }} kt-badge--wide">{{ getItemConditionString(order.status) }}</span>
+							-->
+							<span style="cursor: pointer;" (click)="viewOrder(order.id_order)" class="kt-badge kt-badge--inline kt-badge--pill kt-badge--{{ getItemCssClassByCondition(order.status) }} kt-badge--wide">{{ getItemConditionString(order.status) }}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="date">
+						<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 10%;">Order Date</mat-header-cell>
+						<mat-cell *matCellDef="let order" style="flex: 0 1 10%;">{{order.create_at}}</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="pay">
+						<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 10%;">Pay Date</mat-header-cell>
+						<mat-cell *matCellDef="let order" style="flex: 0 1 10%;">{{order.editDate}}</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="actions">
+						<mat-header-cell *matHeaderCellDef style="flex: 0 1 4%;">
+							Actions
+						</mat-header-cell>
+						<mat-cell *matCellDef="let order" style="flex: 0 1 4%;">
+							<button type="button" *ngIf="order.status === 0 && isAdmin !== 3;" (click)="cancel(order)" mat-icon-button color="primary" matTooltip="Cancel Order">
+								<mat-icon>cancel</mat-icon>
+							</button>&nbsp;
+							<!--
+							<button type="button" *ngIf="order.status !== 0;" (click)="viewOrder(order.id_order)" mat-icon-button color="primary" matTooltip="View order">
+								<mat-icon>zoom_in</mat-icon>
+							</button>&nbsp;
+							<button mat-icon-button color="warn" type="button" (click)="deleteOrder(order)" matTooltip="Delete order" *ngIf="isAdmin === 1">
+								<mat-icon>delete</mat-icon>
+							</button>&nbsp;
+
+							<button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="More actions">
+								<mat-icon>more_vert</mat-icon>
+							</button>
+							<mat-menu #menu="matMenu">
+								<button type="button" (click)="showImage(order.id)" mat-menu-item type="button">
+									<mat-icon>image</mat-icon>
+									<span>Image</span>
+								</button>
+
+								<button type="button" (click)="showCategory(order.id_category)" mat-menu-item type="button">
+									<mat-icon>info</mat-icon>
+									<span>Shipping</span>
+								</button>
+								<button type="button" (click)="showCategory(order.id_category)" mat-menu-item type="button">
+									<mat-icon>subject</mat-icon>
+									<span>Category</span>
+								</button>
+								<button mat-menu-item type="button">
+									<mat-icon>assignment</mat-icon>
+									<span>Brand</span>
+								</button>
+
+							</mat-menu>
+							-->
+						</mat-cell>
+					</ng-container>
+
+					<mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+					<mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+				</mat-table>
+				<div class="mat-table__message" *ngIf="!dataSource.hasItems">No records found</div>
+				<div class="mat-table__message" *ngIf="dataSource.isPreloadTextViewed$ | async">Please wait....</div>
+			</div>
+
+			<!-- start: BOTTOM -->
+			<div class="mat-table__bottom">
+				<mat-spinner [diameter]="20" *ngIf="dataSource.loading$ | async"></mat-spinner>
+				<mat-paginator [pageSize]="25" [pageSizeOptions]="[25, 50, 100]" [length]="dataSource.paginatorTotal$ | async" [showFirstLastButtons]="true"></mat-paginator>
+			</div>
+			<!-- end: BOTTOM -->
+		</kt-portlet-body>
+		<!-- end::Body -->
+	</kt-portlet>

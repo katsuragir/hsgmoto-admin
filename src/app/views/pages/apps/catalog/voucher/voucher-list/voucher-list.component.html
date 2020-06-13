@@ -1,0 +1,172 @@
+<kt-portlet>
+
+	<kt-portlet-header [title]="'Vouchers list'" [class]="'kt-portlet__head--lg'" [viewLoading$]="dataSource.loading$">
+		<ng-container ktPortletTools>
+			<button [routerLink]="['../vouchers/add']" mat-raised-button color="primary" matTooltip="Create new voucher">New Voucher</button>
+		</ng-container>
+	</kt-portlet-header>
+	<!-- end::Header -->
+
+	<kt-portlet-body>
+		<!-- start::FILTERS & GROUP ACTIONS -->
+		<div class="kt-form">
+			<!-- start::FILTERS -->
+			<div class="kt-form__filtration">
+				<div class="row align-items-center">
+					<div class="col-md-4 kt-margin-bottom-10-mobile">
+						<mat-form-field class="mat-form-field-fluid">
+							<input matInput placeholder="Search catalog" #searchInput placeholder="Search">
+							<mat-hint align="start">
+								<strong>Search</strong> in all fields
+							</mat-hint>
+						</mat-form-field>
+					</div>
+				</div>
+			</div>
+			<!-- end::FILTERS -->
+
+			<!-- start::GROUP ACTIONS -->
+			<!-- Group actions list: 'Delete selected' | 'Fetch selected' | 'Update status for selected' -->
+			<!-- Group actions are shared for all LISTS | See '../../_shared' folder -->
+			<div class="row align-items-center collapse kt-form__group-actions kt-margin-top-20 kt-margin-bottom-20" [ngClass]="{'show' : selection.selected.length > 0}">
+				<div class="col-xl-12">
+					<div class="kt-form__group kt-form__group--inline">
+						<div class="kt-form__label kt-form__label-no-wrap">
+							<label class="kt--font-bold kt-font-danger-">Selected records count: {{ selection.selected.length }}</label>
+						</div>
+						<div class="kt-form__control kt-form__group--inline">
+							<button mat-raised-button color="accent" (click)="deleteVouchers()" matTooltip="Delete selected vouchers"  class="mat-button-mt-4">
+								<mat-icon>delete</mat-icon>
+								Delete All
+							</button>&nbsp;<!-- Call 'delete-entity-dialog' from _shared folder -->
+							<button mat-raised-button (click)="fetchVouchers()" matTooltip="Fetch selected products"  class="mat-button-mt-4">
+								<mat-icon>clear_all</mat-icon>
+								Fetch Selected Records
+							</button>&nbsp;<!-- Call 'fetch-entity-dialog' from _shared folder -->
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- end::GROUP ACTIONS -->
+		</div>
+		<!-- end::FILTERS & GROUP ACTIONS -->
+
+		<!-- MATERIAL TABLE | Binded to datasources -->
+		<!-- See off.documentations 'https://material.angular.io/components/table/overview' -->
+		<div class="mat-table__wrapper">
+			<!-- Checkbox Column -->
+			<!-- Table with selection -->
+			<!-- https://run.stackblitz.com/api/angular/v1?file=app%2Ftable-selection-example.ts -->
+			<mat-table class="lmat-elevation-z8"
+				#table
+				[dataSource]="dataSource"
+				matSort
+				#sort="matSort"
+				matSortActive="id"
+				matSortDirection="asc"
+				matSortDisableClear>
+				<!-- Checkbox Column
+				<ng-container matColumnDef="select">
+					<mat-header-cell *matHeaderCellDef class="mat-column-checkbox">
+						<mat-checkbox (change)="$event ? masterToggle() : null"
+							[checked]="selection.hasValue() && isAllSelected()"
+							[indeterminate]="selection.hasValue() && !isAllSelected()"
+							[color]="'primary'">
+						</mat-checkbox>
+					</mat-header-cell>
+					<mat-cell *matCellDef="let row" class="mat-column-checkbox">
+						<mat-checkbox (click)="$event.stopPropagation()"
+							(change)="$event ? selection.toggle(row) : null"
+							[checked]="selection.isSelected(row)"
+							[color]="'primary'">
+						</mat-checkbox>
+					</mat-cell>
+				</ng-container>
+				-->
+				<ng-container matColumnDef="vid">
+					<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 20%;">Voucher ID</mat-header-cell>
+					<mat-cell *matCellDef="let vouchers" style="flex: 0 1 20%;">
+						<span style="cursor: pointer" class="kt-id-order" (click)="onSelect(vouchers)">{{vouchers.voucherid}}</span>
+					</mat-cell>
+				</ng-container>
+
+				<ng-container matColumnDef="vname">
+					<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 20%;">Voucher Name</mat-header-cell>
+					<mat-cell *matCellDef="let vouchers" style="flex: 0 1 20%;">{{vouchers.vouchername}}</mat-cell>
+				</ng-container>
+
+				<ng-container matColumnDef="from">
+					<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 7%;">From</mat-header-cell>
+					<mat-cell *matCellDef="let vouchers" style="flex: 0 1 7%;">{{vouchers.fromdate | date: 'dd-MM-yyyy'}}</mat-cell>
+				</ng-container>
+
+				<ng-container matColumnDef="to">
+					<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 7%;">To</mat-header-cell>
+					<mat-cell *matCellDef="let vouchers" style="flex: 0 1 7%;">{{vouchers.todate | date: 'dd-MM-yyyy'}}</mat-cell>
+				</ng-container>
+
+				<ng-container matColumnDef="value">
+					<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 7%; justify-content: center;">Value</mat-header-cell>
+					<mat-cell *matCellDef="let vouchers" style="flex: 0 1 7%; justify-content: center;">
+							{{vouchers.value}} <span *ngIf="vouchers.vouchertab === 'Percent'"> %</span>
+					</mat-cell>
+				</ng-container>
+
+				<ng-container matColumnDef="status">
+					<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 10%;">Status</mat-header-cell>
+					<mat-cell *matCellDef="let vouchers" style="flex: 0 1 10%;">
+						<span *ngIf="isAdmin === 1 || isAdmin === 2" (click)="onActive(vouchers.voucherid, vouchers)" style="cursor: pointer;" class="kt-badge kt-badge--inline kt-badge--pill kt-badge--{{ getItemCssClassByStatus(vouchers.status) }} kt-badge--wide">{{ getItemStatusString(vouchers.status) }}</span>
+						<span *ngIf="isAdmin === 3" class="kt-badge kt-badge--inline kt-badge--pill kt-badge--{{ getItemCssClassByStatus(vouchers.status) }} kt-badge--wide">{{ getItemStatusString(vouchers.status) }}</span>
+					</mat-cell>
+				</ng-container>
+
+				<ng-container matColumnDef="create">
+					<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 7%;">Create Date</mat-header-cell>
+					<mat-cell *matCellDef="let vouchers" style="flex: 0 1 7%;">{{vouchers.createdate | date: 'dd-MM-yyyy'}}</mat-cell>
+				</ng-container>
+
+				<ng-container matColumnDef="update">
+					<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 7%;">Update</mat-header-cell>
+					<mat-cell *matCellDef="let vouchers" style="flex: 0 1 7%;">{{vouchers.updatedate | date: 'dd-MM-yyyy'}}</mat-cell>
+				</ng-container>
+
+				<ng-container matColumnDef="qouta">
+					<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 5%; flex-direction: column-reverse;">Quota</mat-header-cell>
+					<mat-cell *matCellDef="let vouchers" style="flex: 0 1 5%; flex-direction: column-reverse;">{{vouchers.kouta}}</mat-cell>
+				</ng-container>
+
+				<ng-container matColumnDef="use">
+					<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 5%; flex-direction: column-reverse;">In Use</mat-header-cell>
+					<mat-cell *matCellDef="let vouchers" style="flex: 0 1 5%; flex-direction: column-reverse;">{{vouchers.inuse}}</mat-cell>
+				</ng-container>
+
+				<ng-container matColumnDef="actions">
+					<mat-header-cell *matHeaderCellDef style="flex: 0 1 5%;">
+						Actions
+					</mat-header-cell>
+					<mat-cell *matCellDef="let vouchers" style="flex: 0 1 5%;">
+						<button *ngIf="isAdmin !== 3" [disabled]="vouchers.status === 1" type="button" (click)="editVoucher(vouchers.id)" mat-icon-button color="primary" matTooltip="Edit voucher">
+							<mat-icon>edit</mat-icon>
+						</button>&nbsp;
+						<button *ngIf="isAdmin !== 3" [disabled]="vouchers.status === 1" mat-icon-button color="warn" type="button" (click)="deleteVoucher(vouchers)" matTooltip="Delete voucher">
+							<mat-icon>delete</mat-icon>
+						</button>&nbsp;
+					</mat-cell>
+				</ng-container>
+
+				<mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+				<mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+			</mat-table>
+			<div class="mat-table__message" *ngIf="!dataSource.hasItems || !found">No records found</div>
+			<div class="mat-table__message" *ngIf="dataSource.isPreloadTextViewed$ | async">Please wait....</div>
+		</div>
+
+		<!-- start: BOTTOM -->
+		<div class="mat-table__bottom">
+			<mat-spinner [diameter]="20" *ngIf="dataSource.loading$ | async"></mat-spinner>
+			<mat-paginator [pageSize]="25" [pageSizeOptions]="[25, 50, 100]" [length]="dataSource.paginatorTotal$ | async" [showFirstLastButtons]="true"></mat-paginator>
+		</div>
+		<!-- end: BOTTOM -->
+	</kt-portlet-body>
+	<!-- end::Body -->
+</kt-portlet>

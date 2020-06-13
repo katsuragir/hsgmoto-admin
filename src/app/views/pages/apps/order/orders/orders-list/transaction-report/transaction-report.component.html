@@ -1,0 +1,138 @@
+<kt-portlet>
+
+		<kt-portlet-header [title]="'Transaction Report'" [class]="'kt-portlet__head--lg'" [viewLoading$]="dataSource.loading$">
+
+			<ng-container ktPortletTools>
+				<a (click)="close()" class="btn btn-secondary kt-margin-r-10"  mat-raised-button matTooltip="Close">
+					<i class="la la-times"></i>
+					<span class="kt-hidden-mobile">Close</span>
+				</a>
+			</ng-container>
+
+		</kt-portlet-header>
+		<!-- end::Header -->
+
+		<kt-portlet-body>
+			<!-- start::FILTERS & GROUP ACTIONS -->
+			<div class="kt-form">
+				<!-- start::FILTERS -->
+				<div class="kt-form__filtration">
+					<div class="row align-items-center">
+						<div class="col-md-3 kt-margin-bottom-10-mobile">
+
+							<div class="kt-form__control">
+								<mat-form-field>
+									<mat-select [(value)]="filterStatus" (selectionChange)="loadReportsMonthList()" class="mat-form-field mat-form-field-fluid">
+										<mat-option value="">All</mat-option>
+										<mat-option value="1">January</mat-option>
+										<mat-option value="2">February</mat-option>
+										<mat-option value="3">March</mat-option>
+										<mat-option value="4">April</mat-option>
+										<mat-option value="5">May</mat-option>
+										<mat-option value="6">June</mat-option>
+										<mat-option value="7">July</mat-option>
+										<mat-option value="8">August</mat-option>
+										<mat-option value="9">September</mat-option>
+										<mat-option value="10">October</mat-option>
+										<mat-option value="11">November</mat-option>
+										<mat-option value="12">December</mat-option>
+									</mat-select>
+									<mat-hint align="start">
+										<strong>Filter by Month</strong>
+									</mat-hint>
+								</mat-form-field>
+							</div>
+
+						</div>
+						<div class="col-md-4 kt-margin-bottom-10-mobile">
+							<mat-form-field class="mat-form-field-fluid">
+								<input matInput #searchInput hidden>
+								<!--<mat-datepicker-toggle matSuffix [for]="to"></mat-datepicker-toggle>
+								<mat-datepicker #to></mat-datepicker>
+								<mat-hint align="start">
+									<strong>Filter by Date</strong>
+								</mat-hint>-->
+							</mat-form-field>
+						</div>
+						<!--
+						<div class="col-md-5 kt-margin-bottom-10-mobile">
+							<button [routerLink]="['../order/add']" mat-raised-button color="primary" style="float: right;" matTooltip="Export Report">Export Report</button>
+						</div>
+						-->
+					</div>
+				</div>
+				<!-- end::FILTERS -->
+
+				<!-- start::GROUP ACTIONS -->
+				<!-- Group actions list: 'Delete selected' | 'Fetch selected' | 'Update status for selected' -->
+				<!-- Group actions are shared for all LISTS | See '../../_shared' folder -->
+				<div class="row align-items-center collapse kt-form__group-actions kt-margin-top-20 kt-margin-bottom-20" [ngClass]="{'show' : selection.selected.length > 0}">
+					<div class="col-xl-12">
+						<div class="kt-form__group kt-form__group--inline">
+							<div class="kt-form__label kt-form__label-no-wrap">
+								<label class="kt--font-bold kt-font-danger-">Selected records count: {{ selection.selected.length }}</label>
+							</div>
+							<div class="kt-form__control kt-form__group--inline">
+
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- end::GROUP ACTIONS -->
+			</div>
+			<!-- end::FILTERS & GROUP ACTIONS -->
+
+			<!-- MATERIAL TABLE | Binded to datasources -->
+			<!-- See off.documentations 'https://material.angular.io/components/table/overview' -->
+			<div class="mat-table__wrapper">
+				<!-- Checkbox Column -->
+				<!-- Table with selection -->
+				<!-- https://run.stackblitz.com/api/angular/v1?file=app%2Ftable-selection-example.ts -->
+				<mat-table class="lmat-elevation-z8"
+					#table
+					[dataSource]="dataSource"
+					matSort
+					#sort1="matSort"
+
+					matSortDisableClear>
+
+					<ng-container matColumnDef="date">
+						<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 25%;">Date</mat-header-cell>
+						<mat-cell *matCellDef="let report" style="flex: 0 1 25%;">{{report.date}}</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="status">
+						<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 25%;">Status</mat-header-cell>
+						<mat-cell *matCellDef="let report"style="flex: 0 1 25%;">
+							<span style="cursor: pointer;" class="kt-badge kt-badge--inline kt-badge--pill kt-badge--{{ getItemCssClassByCondition(report.status) }} kt-badge--wide">{{ report.status }}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="total">
+						<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 35%;">Total Amount Transaction</mat-header-cell>
+						<mat-cell *matCellDef="let report" style="flex: 0 1 35%;">
+							<span>Rp. {{report.total}}</span>
+						</mat-cell>
+					</ng-container>
+
+					<ng-container matColumnDef="count">
+						<mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 0 1 15%;">Total Transaction</mat-header-cell>
+						<mat-cell *matCellDef="let report" style="flex: 0 1 15%;">{{ report.count }}</mat-cell>
+					</ng-container>
+
+					<mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+					<mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+				</mat-table>
+				<div class="mat-table__message" *ngIf="!dataSource.hasItems || !found">No records found</div>
+				<div class="mat-table__message" *ngIf="dataSource.isPreloadTextViewed$ | async">Please wait....</div>
+			</div>
+
+			<!-- start: BOTTOM -->
+			<div class="mat-table__bottom">
+				<mat-spinner [diameter]="20" *ngIf="dataSource.loading$ | async"></mat-spinner>
+				<mat-paginator [pageSize]="25" [pageSizeOptions]="[25, 50, 100]" [length]="dataSource.paginatorTotal$ | async" [showFirstLastButtons]="true"></mat-paginator>
+			</div>
+			<!-- end: BOTTOM -->
+		</kt-portlet-body>
+		<!-- end::Body -->
+	</kt-portlet>

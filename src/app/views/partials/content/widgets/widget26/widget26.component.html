@@ -1,0 +1,23 @@
+<div class="kt-widget26" style="width: 100%;">
+	<div class="row" *ngIf="desc === 'Total Order' || desc === 'Cancel Order'">
+		<div class="kt-widget26__content" style="max-width: 50%; float: left; position: relative;">
+			<span class="kt-widget26__number">{{value}}</span>
+			<span class="kt-widget26__desc" style="font-size: 12px;">{{desc}} Today</span>
+		</div>
+		<div class="kt-widget26__content" style="max-width: 50%; float: right; position: relative; text-align-last: right;">
+			<span class="kt-widget26__number">{{total}}</span>
+			<span class="kt-widget26__desc" style="font-size: 12px;">All {{desc}}</span>
+		</div>
+	</div>
+
+	<div class="row" *ngIf="desc === 'On Process Order' || desc === 'Waiting a Payment'">
+		<div class="kt-widget26__content" style="max-width: 50%; float: left; position: relative;">
+			<span class="kt-widget26__number">{{total}}</span>
+			<span class="kt-widget26__desc" style="font-size: 12px;">{{desc}}</span>
+		</div>
+	</div>
+
+	<div class="kt-widget26__chart" style="height:100px; width: 100%;">
+		<canvas ktSparklineChart [options]="options" id="kt_chart_quick_stats_1"></canvas>
+	</div>
+</div>

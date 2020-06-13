@@ -1,0 +1,178 @@
+<div ngbDropdown #myDrop="ngbDropdown" placement="bottom-right" autoClose="outside" class="kt-header__topbar-item" *ngIf="(newcheckoutNotif$ | async) as newcheckoutNotif; else dashboardMonit">
+	<div ngbDropdownToggle class="kt-header__topbar-wrapper">
+		<span class="kt-header__topbar-icon" [ngClass]="{'kt-pulse kt-pulse--brand': pulse, 'kt-pulse--light' : pulseLight, 'kt-header__topbar-icon--success' : iconType === 'success'	}">
+			<span style="position: absolute;width: 18px;height: 18px;text-align: center;font-size: 12px;line-height: 17px;font-weight: 600;top: -4%;right: 1px;color: red;border-radius: 20%;font-stretch: semi-expanded;border-radius: 50%;">{{newcheckoutNotif.nTotal}}</span>
+			<i *ngIf="!useSVG" [ngClass]="icon"></i>
+			<span *ngIf="useSVG" class="kt-svg-icon" [ngClass]="{'kt-svg-icon--success' : iconType === 'success'}" [inlineSVG]="icon"></span>
+			<span class="kt-pulse__ring" [hidden]="!pulse"></span>
+		</span>
+		<span class="kt-badge kt-badge--dot kt-badge--notify kt-badge--sm kt-badge--brand" [hidden]="!dot"></span>
+	</div>
+
+	<div ngbDropdownMenu class="dropdown-menu dropdown-menu-fit dropdown-menu-right dropdown-menu-anim dropdown-menu-top-unround dropdown-menu-lg">
+		<form>
+			<!--begin: Head -->
+			<div class="kt-head kt-head--skin-{{skin}} kt-head--fit-x kt-head--fit-b" [ngStyle]="{'background-image': backGroundStyle() }">
+				<h3 *ngIf="newcheckoutNotif.nTotal !== 0" class="kt-head__title">
+					You Have
+					{{newcheckoutNotif.nTotal}} new
+					Notifications
+				</h3>
+				<h3 *ngIf="newcheckoutNotif.nTotal === 0" class="kt-head__title">
+					You don't Have new Notifications
+				</h3>
+				<ul ktTabClickEvent class="nav nav-tabs nav-tabs-line nav-tabs-bold nav-tabs-line-3x nav-tabs-line-{{ type }} kt-notification-item-padding-x" role="tablist">
+					<li class="nav-item">
+						<a (click)="tab.select('tab-id-1')" class="nav-link active show" data-toggle="tab" href="javascript:;" role="tab" aria-selected="true">Alerts</a>
+					</li>
+				</ul>
+			</div>
+			<!--end: Head -->
+
+			<ngb-tabset #tab="ngbTabset">
+				<ngb-tab id="tab-id-1">
+					<ng-template ngbTabContent>
+						<div [perfectScrollbar]="{wheelPropagation: false}" [ngStyle]="{'max-height': '40vh', 'position': 'relative'}" class="kt-notification kt-margin-t-10 kt-margin-b-10">
+							<a href="javascript:;" (click)="orderlist();myDrop.close();" class="kt-notification__item">
+								<div class="kt-notification__item-icon">
+									<i class="flaticon2-line-chart kt-font-success"></i>
+								</div>
+								<div class="kt-notification__item-details" >
+									<div class="kt-notification__item-title">
+										New order has been received
+									</div>
+									<div class="kt-notification__item-time">
+										<span style="color:black;font-weight:500;">{{newcheckoutNotif.nCheck}}</span> New order
+									</div>
+								</div>
+							</a>
+							<a href="javascript:;" (click)="confirmlist();myDrop.close();" class="kt-notification__item">
+								<div class="kt-notification__item-icon">
+									<i class="flaticon2-checking kt-font-primary"></i>
+								</div>
+								<div class="kt-notification__item-details" >
+									<div class="kt-notification__item-title">
+										New confirmation order has been received
+									</div>
+									<div class="kt-notification__item-time">
+										<span style="color:black;font-weight:500;">{{newcheckoutNotif.nVeri}}</span> New confirmation order
+									</div>
+								</div>
+							</a>
+							<a href="javascript:;" (click)="confirmlist();myDrop.close();" class="kt-notification__item">
+								<div class="kt-notification__item-icon">
+									<i class="flaticon2-paper-plane kt-font-brand"></i>
+								</div>
+								<div class="kt-notification__item-details" >
+									<div class="kt-notification__item-title">
+										New payment order has been received
+									</div>
+									<div class="kt-notification__item-time">
+										<span style="color:black;font-weight:500;">{{newcheckoutNotif.nPay}}</span> New payment order
+									</div>
+								</div>
+							</a>
+
+							<div class="ps__rail-x" style="left: 0px; bottom: 0px;">
+								<div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div>
+							</div>
+							<div class="ps__rail-y" style="top: 0px; right: 0px;">
+								<div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px;"></div>
+							</div>
+						</div>
+					</ng-template>
+				</ngb-tab>
+			</ngb-tabset>
+		</form>
+	</div>
+</div>
+
+<!---alternatif-->
+
+<ng-template #dashboardMonit>
+	<div ngbDropdown #myDrop="ngbDropdown" placement="bottom-right" autoClose="outside" class="kt-header__topbar-item" >
+		<div ngbDropdownToggle class="kt-header__topbar-wrapper">
+			<span class="kt-header__topbar-icon" [ngClass]="{'kt-pulse kt-pulse--brand': pulse, 'kt-pulse--light' : pulseLight, 'kt-header__topbar-icon--success' : iconType === 'success'	}">
+				<span style="position: absolute;width: 18px;height: 18px;text-align: center;font-size: 12px;line-height: 17px;font-weight: 600;top: -4%;right: 1px;color: red;border-radius: 20%;font-stretch: semi-expanded;border-radius: 50%;">0</span>
+				<i *ngIf="!useSVG" [ngClass]="icon"></i>
+				<span *ngIf="useSVG" class="kt-svg-icon" [ngClass]="{'kt-svg-icon--success' : iconType === 'success'}" [inlineSVG]="icon"></span>
+				<span class="kt-pulse__ring" [hidden]="!pulse"></span>
+			</span>
+			<span class="kt-badge kt-badge--dot kt-badge--notify kt-badge--sm kt-badge--brand" [hidden]="!dot"></span>
+		</div>
+
+		<div ngbDropdownMenu class="dropdown-menu dropdown-menu-fit dropdown-menu-right dropdown-menu-anim dropdown-menu-top-unround dropdown-menu-lg">
+			<form>
+				<!--begin: Head -->
+				<div class="kt-head kt-head--skin-{{skin}} kt-head--fit-x kt-head--fit-b" [ngStyle]="{'background-image': backGroundStyle() }">
+					<h3 class="kt-head__title">
+						You don't Have
+						new
+						Notifications
+					</h3>
+					<ul ktTabClickEvent class="nav nav-tabs nav-tabs-line nav-tabs-bold nav-tabs-line-3x nav-tabs-line-{{ type }} kt-notification-item-padding-x" role="tablist">
+						<li class="nav-item">
+							<a (click)="tab.select('tab-id-1')" class="nav-link active show" data-toggle="tab" href="javascript:;" role="tab" aria-selected="true">Alerts</a>
+						</li>
+					</ul>
+				</div>
+				<!--end: Head -->
+
+				<ngb-tabset #tab="ngbTabset">
+					<ngb-tab id="tab-id-1">
+						<ng-template ngbTabContent>
+							<div [perfectScrollbar]="{wheelPropagation: false}" [ngStyle]="{'max-height': '40vh', 'position': 'relative'}" class="kt-notification kt-margin-t-10 kt-margin-b-10">
+								<a href="javascript:;" (click)="orderlist();myDrop.close();" class="kt-notification__item">
+									<div class="kt-notification__item-icon">
+										<i class="flaticon2-line-chart kt-font-success"></i>
+									</div>
+									<div class="kt-notification__item-details" >
+										<div class="kt-notification__item-title">
+											New order has been received
+										</div>
+										<div class="kt-notification__item-time">
+											<span style="color:black;font-weight:500;">0</span> New order
+										</div>
+									</div>
+								</a>
+								<a href="javascript:;" (click)="confirmlist();myDrop.close();" class="kt-notification__item">
+									<div class="kt-notification__item-icon">
+										<i class="flaticon2-checking kt-font-primary"></i>
+									</div>
+									<div class="kt-notification__item-details" >
+										<div class="kt-notification__item-title">
+											New confirmation order has been received
+										</div>
+										<div class="kt-notification__item-time">
+											<span style="color:black;font-weight:500;">0</span> New confirmation order
+										</div>
+									</div>
+								</a>
+								<a href="javascript:;" (click)="confirmlist();myDrop.close();" class="kt-notification__item">
+									<div class="kt-notification__item-icon">
+										<i class="flaticon2-paper-plane kt-font-brand"></i>
+									</div>
+									<div class="kt-notification__item-details" >
+										<div class="kt-notification__item-title">
+											New payment order has been received
+										</div>
+										<div class="kt-notification__item-time">
+											<span style="color:black;font-weight:500;">0</span> New payment order
+										</div>
+									</div>
+								</a>
+
+								<div class="ps__rail-x" style="left: 0px; bottom: 0px;">
+									<div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div>
+								</div>
+								<div class="ps__rail-y" style="top: 0px; right: 0px;">
+									<div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px;"></div>
+								</div>
+							</div>
+						</ng-template>
+					</ngb-tab>
+				</ngb-tabset>
+			</form>
+		</div>
+	</div>
+</ng-template>

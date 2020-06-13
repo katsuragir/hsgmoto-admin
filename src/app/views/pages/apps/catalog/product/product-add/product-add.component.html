@@ -1,0 +1,415 @@
+
+<kt-portlet>
+	<kt-portlet-header [title]="getComponentTitle()" [class]="'kt-portlet__head--lg'" [viewLoading$]="loading$">
+		<ng-container ktPortletTools>
+			<a [routerLink]="['../']" (click)="deleteCover()" class="btn btn-secondary kt-margin-r-10"  mat-raised-button matTooltip="Back to the categories list">
+				<i class="la la-arrow-left"></i>
+				<span class="kt-hidden-mobile">Back</span>
+			</a>
+			<!--
+			<a href="javascript:;" class="btn btn-secondary kt-margin-r-10" (click)="reset()" [disabled]="selectedTab !== 0" mat-raised-button matTooltip="Reset changes">
+				<i class="la la-cog"></i>
+				<span class="kt-hidden-mobile">Reset</span>
+			</a>
+			-->
+
+		</ng-container>
+	</kt-portlet-header>
+	<kt-portlet-body>
+		<mat-tab-group [(selectedIndex)]="selectedTab" *ngIf="category">
+			<mat-tab label="Basic Setting">
+				<ng-template matTabContent>
+					<div *ngIf="category">
+						<!--begin::Form-->
+						<form [formGroup]="barangForm" class="kt-form kt-form--group-seperator-dashed" enctype="multipart/form-data">
+							<kt-alert *ngIf="hasErrors" type="warn" [showCloseButton]="true" [duration]="10000" (close)="onAlertClose($event)">
+								Oh snap! The Weight Can't Be Null.
+							</kt-alert>
+							<kt-alert *ngIf="hasSlugErrors" type="warn" [showCloseButton]="true" [duration]="10000" (close)="onAlertClose($event)">
+								Oh snap! The Duplicate Slug Name.
+							</kt-alert>
+							<kt-alert *ngIf="hasFormErrors" type="warn" [showCloseButton]="true" [duration]="10000" (close)="onAlertClose($event)">
+								Oh snap! Change a few things up and try submitting again.
+							</kt-alert>
+							<kt-alert *ngIf="hasBrandErrors" type="warn" [showCloseButton]="true" [duration]="10000" (close)="onAlertClose($event)">
+								Oh snap! The brand not found, please add that brand first.
+							</kt-alert>
+
+							<div class="kt-form__section kt-form__section--first">
+
+								<div class="kt-form__group">
+									<div class="row">
+										<p style="float: left; font-size: 12px; color: red;margin-bottom: unset; margin-left: 10px;">*Double Click To Change Cover</p>
+										<div *ngIf="files.length <= 0" class="col-md-12 kt-margin-bottom-10-mobile">
+												<ngfFormData
+												[files]      = "files"
+												postName     = "file"
+												[(FormData)] = "sendableFormData"
+											  ></ngfFormData>
+											<div
+												ngfDrop
+												multiple         = "1"
+												selectable       = "1"
+												[(validDrag)]    = "validComboDrag"
+												[(files)]        = "files"
+												accept           = "image/*"
+												[maxSize]        = "2097152"
+												[(lastInvalids)] = "lastInvalids"
+												[(dragFiles)]    = "dragFiles"
+												class            = "dropzone"
+												[class.invalid-drag] = "validComboDrag===false"
+												[class.valid-drag]   = "validComboDrag"
+												(filesChange) = "lastFileAt=getDate()"
+											  >
+
+
+											<div *ngIf="files <= 0" class="imageDummy">
+												<i class="material-icons" style="margin-bottom: 10px; font-size: 45px !important;">add_photo_alternate</i>
+												<span>Drop image related here <br /> <strong>or select File</strong></span> <br />
+												<span style="font-size: 12px; font-style: italic; color: darkgray;">Recommended size 500 x 500px for default theme.</span>
+												<br />
+												<span style="font-size: 12px; font-style: italic; color: darkgray;">Max 10 file Image with JPG format.</span>
+											</div>
+
+												<div *ngFor="let item of files;let i=index" style="z-index: 1000 !important;">
+													<div *ngIf="['image/gif','image/png','image/jpeg'].indexOf(item.type)>=0">
+														<div class="previewIcon" [ngfBackground]="item" style="margin-right: 15px;"></div>
+														<a style=" z-index: 100 !important; width: 50px;height: auto;" (click)="deleteImage(item)"><i class="fa fa-times-circle" aria-hidden="true"></i>Delete</a>
+													</div>
+												</div>
+
+											</div>
+										</div>
+
+										<div *ngIf="files.length > 0" class="col-md-12 kt-margin-bottom-10-mobile">
+												<ngfFormData
+												[files]      = "files"
+												postName     = "file"
+												[(FormData)] = "sendableFormData"
+											  ></ngfFormData>
+											<div
+												ngfDrop
+												multiple         = "1"
+												[(validDrag)]    = "validComboDrag"
+												[(files)]        = "files"
+												accept           = "image/*"
+												[maxSize]        = "2097152"
+												[(lastInvalids)] = "lastInvalids"
+												[(dragFiles)]    = "dragFiles"
+												class            = "dropzone"
+												[class.invalid-drag] = "validComboDrag===false"
+												[class.valid-drag]   = "validComboDrag"
+												(filesChange) = "lastFileAt=getDate()"
+											  >
+
+											  <div *ngIf="files <= 0" class="imageDummy">Drop Image Related Here Or <strong>Select File</strong></div>
+
+											<div
+											  	ngfDrop
+												multiple         = "1"
+												selectable       = "1"
+												[(validDrag)]    = "validComboDrag"
+												[(files)]        = "files"
+												accept           = "image/*"
+												[maxSize]        = "2097152"
+												[(lastInvalids)] = "lastInvalids"
+												[(dragFiles)]    = "dragFiles"
+												[class.invalid-drag] = "validComboDrag===false"
+												[class.valid-drag]   = "validComboDrag"
+												(filesChange) = "lastFileAt=getDate()"
+											  	style="z-index: 1000 !important;"
+											  >
+												<div>
+													 <img class="previewIcon1" src="{{localURl}}/images/plus.png" style="margin-right: 15px;">
+
+												</div>
+											</div>
+												<div *ngFor="let item of files | slice:0:10;let i=index" style="z-index: 1000 !important;">
+													<div class="row">
+														<div *ngIf="['image/gif','image/png','image/jpeg'].indexOf(item.type)>=0">
+															<div class="previewIcon" [ngfBackground]="item" style="margin-right: 15px;">
+
+																<span *ngIf="cover && item.name === cover.image || item.name === cover" style="width: 100%; height: auto; border: thin solid gray; bottom: 0; left: 0; position: absolute; background-color: darkgrey; color: white; font-size: 15px;">Cover</span>
+
+															</div>
+															<div class="row">
+																<a class="col-12" style=" z-index: 100 !important; width: 50px;height: auto;" (click)="setCover(item)"><i class="fa fa-picture-o" aria-hidden="true"></i>Set Cover</a>
+																<a class="col-12" style=" z-index: 100 !important; width: 50px;height: auto;" (click)="deleteImage(item)"><i class="fa fa-times-circle" aria-hidden="true"></i>Delete</a>
+															</div>
+														</div>
+
+													</div>
+												</div>
+												<!--
+												<div *ngFor="let item of files | slice:1:10;let i=index" style="z-index: 1000 !important;">
+													<div *ngIf="['image/gif','image/png','image/jpeg'].indexOf(item.type)>=0">
+														<div class="previewIcon" [ngfBackground]="item" style="margin-right: 15px;"></div>
+														<a style=" z-index: 100 !important; width: 50px;height: auto;" (click)="deleteImage(item)"><i class="fa fa-times-circle" aria-hidden="true"></i>Delete</a>
+													</div>
+												</div>
+												-->
+											</div>
+										</div>
+
+									</div>
+								</div>
+
+								<div class="kt-form__group">
+									<div class="row">
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<input matInput placeholder="Barcode" formControlName="barcode">
+												<mat-error>
+													Barcode is
+													<strong>required</strong>
+												</mat-error>
+												<mat-hint align="start">
+													<strong>Required</strong>
+												</mat-hint>
+											</mat-form-field>
+										</div>
+
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<input matInput placeholder="Name Product" formControlName="name">
+												<mat-error>
+													Name Product is
+													<strong>required</strong>
+												</mat-error>
+												<mat-hint align="start">
+													<strong>Required</strong>
+												</mat-hint>
+											</mat-form-field>
+										</div>
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<mat-select placeholder="Category" formControlName="id_category">
+													<mat-option (click)="openDialog()">Add New Categories</mat-option>
+													<div *ngFor="let cat of category; let i = index;">
+														<mat-option value="{{cat.id}}">{{i+1}}) {{cat.name}}</mat-option>
+
+														<div *ngIf="cat.children.length > 0">
+															<mat-option style="margin-left: 5%" value="{{child.id}}" *ngFor="let child of cat.children; let i = index;">{{i+1}}. {{child.name}}</mat-option>
+														</div>
+
+													</div>
+												</mat-select>
+												<mat-error>
+													Category
+													<strong>required</strong>
+												</mat-error>
+												<mat-hint align="start">
+													<strong>Required</strong>
+												</mat-hint>
+											</mat-form-field>
+										</div>
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<input type="text" placeholder="Brand" aria-label="Number" matInput formControlName="id_brand" [matAutocomplete]="auto">
+												<mat-autocomplete #auto="matAutocomplete">
+													<mat-option *ngFor="let option of brand$ | async" [value]="option.name">
+													{{option.name}}
+													</mat-option>
+												</mat-autocomplete>
+												<mat-error>
+													Brand
+													<strong>required</strong>
+												</mat-error>
+												<mat-hint align="start">
+													<strong>Required</strong>
+												</mat-hint>
+											</mat-form-field>
+
+										</div>
+									</div>
+								</div>
+
+								<div class="kt-form__group">
+									<div class="row">
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<input matInput type="number" placeholder="Stock" formControlName="stock">
+												<mat-error>
+													Stock is
+													<strong>required</strong>
+												</mat-error>
+												<mat-hint align="start">
+													<strong>Required</strong>
+												</mat-hint>
+											</mat-form-field>
+										</div>
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<input appMycurrency matInput placeholder="Price" formControlName="price">
+												<span matPrefix>Rp.&nbsp;</span>
+												<mat-error>
+													Price is
+													<strong>required</strong>
+												</mat-error>
+												<mat-hint align="start">
+													<strong>Required</strong>
+												</mat-hint>
+											</mat-form-field>
+										</div>
+
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<input matInput placeholder="Color" formControlName="color" [matAutocomplete]="col">
+												<mat-autocomplete #col="matAutocomplete">
+													<mat-option *ngFor="let col of filteredColors | async" [value]="col">
+														{{ col }}
+													</mat-option>
+												</mat-autocomplete>
+												<mat-error>
+													Color
+													<strong>required</strong>
+												</mat-error>
+												<!--<mat-hint align="start">Please enter
+													<strong>Color</strong>
+												</mat-hint>-->
+											</mat-form-field>
+										</div>
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<input matInput type="text" placeholder="Youtube Code" formControlName="youtube">
+												<mat-hint align="start">
+													* Just bring The youtube code : <br />
+													https://www.youtube.com/watch?v=<strong style="color: red;">-c3evnqVYW4</strong>
+												</mat-hint>
+											</mat-form-field>
+										</div>
+									</div>
+								</div>
+
+								<div class="kt-form__group">
+									<div class="row">
+
+										<div class="col-md-4 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<input matInput type="text" placeholder="Nicotine" formControlName="nic">
+											</mat-form-field>
+										</div>
+
+										<div class="col-md-4">
+											<div>Condition:</div>
+											<mat-radio-group formControlName="kondisi" class="example-radio-group" style="display: inline-block;">
+												<mat-radio-button class="example-radio-button" value="2">Regular</mat-radio-button>
+												<mat-radio-button class="example-radio-button" value="3">Best Product</mat-radio-button>
+												<!--<mat-radio-button class="example-radio-button" value="4">Feature Product</mat-radio-button>-->
+											</mat-radio-group>
+
+										</div>
+										<div class="col-md-4">
+											<div>Status:</div>
+											<mat-radio-group formControlName="status" class="example-radio-group" style="display: inline-block;">
+												<mat-radio-button class="example-radio-button" value="1">Enable</mat-radio-button>
+												<mat-radio-button class="example-radio-button" value="0">Disable</mat-radio-button>
+											</mat-radio-group>
+										</div>
+										<!--
+										<div class="col-md-3">
+											<div>Set Home:</div>
+											<mat-radio-group formControlName="home" class="example-radio-group" style="display: inline-block;">
+												<mat-radio-button class="example-radio-button" value="1">Enable</mat-radio-button>
+												<mat-radio-button class="example-radio-button" value="0">Disable</mat-radio-button>
+											</mat-radio-group>
+										</div>
+										-->
+									</div>
+								</div>
+
+								<div class="kt-form__group">
+									<div class="row">
+										<div class="col-md-6 kt-margin-bottom-10-mobile">
+											<div>Short Description:</div>
+											<angular-editor formControlName="summary" [config]="editorConfig"></angular-editor>
+										</div>
+										<div class="col-md-6 kt-margin-bottom-10-mobile">
+											<div>Description:</div>
+											<angular-editor formControlName="description" [config]="editorConfig"></angular-editor>
+										</div>
+									</div>
+								</div>
+
+								<div class="kt-form__group">
+									<div class="row">
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<div class="input-group">
+													<input matInput placeholder="Width" formControlName="width" class="form-control" #width>
+													<div class="input-group-append">
+														<span class="input-group-text">mm</span>
+													</div>
+												</div>
+												<!--<mat-hint align="start">Please enter
+													<strong>Width</strong>
+												</mat-hint>-->
+											</mat-form-field>
+										</div>
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<div class="input-group">
+													<input matInput placeholder="Height" formControlName="height" class="form-control" #height>
+													<div class="input-group-append">
+														<span class="input-group-text">mm</span>
+													</div>
+												</div>
+												<!--<mat-hint align="start">Please enter
+													<strong>Height</strong>
+												</mat-hint>-->
+											</mat-form-field>
+										</div>
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<div class="input-group">
+													<input matInput placeholder="Depth" formControlName="depth" class="form-control" #depth>
+													<div class="input-group-append">
+														<span class="input-group-text">mm</span>
+													</div>
+												</div>
+												<!--<mat-hint align="start">Please enter
+													<strong>Depth</strong>
+												</mat-hint>-->
+											</mat-form-field>
+										</div>
+										<div style="top: 0; bottom: 0; left: 0; right: 0; margin: auto; align-items: center; text-align: -webkit-center;" class="col-md-1 kt-margin-bottom-10-mobile">
+											<a href="javascript:;" class="btn btn-primary kt-margin-r-10" style="background-color: #66bb6a; color: white;" (click)='calculate(width.value, height.value, depth.value)' mat-raised-button matTooltip="Calculate">
+												<span class="kt-hidden-mobile">Calculate</span>
+											</a>
+										</div>
+										<div class="col-md-2 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<div class="input-group">
+													<input matInput placeholder="Weight" formControlName="weight" class="form-control">
+													<div class="input-group-append">
+														<span class="input-group-text">G</span>
+													</div>
+												</div>
+												<mat-hint align="start">
+													<strong>Required</strong>
+												</mat-hint>
+											</mat-form-field>
+										</div>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+
+					<!--end::Form-->
+				</ng-template>
+			</mat-tab>
+		</mat-tab-group>
+	</kt-portlet-body>
+	<kt-portlet-header [class]="'kt-portlet__head--lg'" [viewLoading$]="loading$">
+		<ng-container ktPortletTools>
+			<a href="javascript:;" class="btn btn-primary kt-margin-r-10" color="primary" (click)="onSumbit(false);" mat-raised-button matTooltip="Save & Continue">
+				<span class="kt-hidden-mobile">Save & Exit</span>
+			</a>
+			<a href="javascript:;" class="btn btn-primary kt-margin-r-10" color="accent" (click)="onSave(false);" mat-raised-button matTooltip="Save & Continue">
+				<span class="kt-hidden-mobile">Save & Continue</span>
+			</a>
+
+		</ng-container>
+	</kt-portlet-header>
+</kt-portlet>

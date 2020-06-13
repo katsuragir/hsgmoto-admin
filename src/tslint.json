@@ -1,0 +1,29 @@
+{
+  "extends": "../tslint.json",
+  "rules": {
+    "directive-selector": [
+      true,
+      "attribute",
+      "kt",
+      "camelCase"
+    ],
+    "component-selector": [
+      true,
+      "element",
+      "kt",
+      "kebab-case"
+	],
+	"indent": [ true, "tabs", 2 ],
+	"variable-name": [ false ],
+	"no-inferrable-types": [
+		false
+	],
+	"prefer-const": [ false ],
+	"align": [ false ],
+	"no-string-literal": [ false ],
+	"only-arrow-functions": [ false ],
+	"no-redundant-jsdoc": [ false ],
+	"no-conditional-assignment": [ false ],
+	"curly": [ false ]
+  }
+}

@@ -1,0 +1,104 @@
+<kt-portlet>
+	<kt-portlet-header [title]="getComponentTitle()" [class]="'kt-portlet__head--lg'" [viewLoading$]="loading$">
+		<ng-container ktPortletTools>
+			<a href="javascript:;" class="btn btn-secondary kt-margin-r-10" (click)="backPage()" mat-raised-button matTooltip="Back to the categories list">
+				<i class="la la-arrow-left"></i>
+				<span class="kt-hidden-mobile">Back</span>
+			</a>
+			<!--
+			<a href="javascript:;" class="btn btn-secondary kt-margin-r-10" (click)="reset()" [disabled]="selectedTab !== 0" mat-raised-button matTooltip="Reset changes">
+				<i class="la la-cog"></i>
+				<span class="kt-hidden-mobile">Reset</span>
+			</a>
+			-->
+		</ng-container>
+	</kt-portlet-header>
+	<kt-portlet-body>
+		<mat-tab-group [(selectedIndex)]="selectedTab" *ngIf="category">
+			<mat-tab label="Basic info">
+				<ng-template matTabContent>
+					<div *ngIf="category">
+						<!--begin::Form-->
+						<form [formGroup]="categoryForm" class="kt-form kt-form--group-seperator-dashed">
+
+							<kt-alert *ngIf="hasFormErrors" type="warn" [showCloseButton]="true" [duration]="10000" (close)="onAlertClose($event)">
+								Oh snap! Change a few things up and try submitting again.
+							</kt-alert>
+							<kt-alert *ngIf="hasSlugErrors" type="warn" [showCloseButton]="true" [duration]="10000" (close)="onAlertClose($event)">
+								Oh snap! The Duplicate Slug Name.
+							</kt-alert>
+
+							<div class="kt-form__section kt-form__section--first">
+
+									<div class="kt-form__group">
+											<div class="row">
+												<div class="col-md-12 kt-margin-bottom-10-mobile">
+													<div class="dropzone">
+														<!--<p class="imageDummy">Image Size 2253 x 768 pixels</p>-->
+														<img class="previewIcon" [src]="imageUrl" style="object-fit: scale-down; border: unset; width: 100%; height: 100%;">
+													</div>
+												</div>
+												<div class="col-md-12 kt-margin-bottom-10-mobile">
+													<input type="file" accept="image/*" (change)="handleFileInput($event.target.files)">
+												</div>
+											</div>
+									</div>
+
+								<div class="kt-form__group">
+									<div class="row">
+
+										<div class="col-md-6 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<input matInput placeholder="Enter Name" formControlName="name">
+												<mat-error>
+													Name is
+													<strong>required</strong>
+												</mat-error>
+												<mat-hint align="start">Please enter
+													<strong>Name</strong>
+												</mat-hint>
+											</mat-form-field>
+										</div>
+										<div class="col-md-6 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<mat-select placeholder="Enter Parent Category" formControlName="id_parent">
+													<mat-option value="{{category.id}}" *ngFor="let category of parent">{{category.name}}</mat-option>
+												</mat-select>
+												<mat-error>
+													Parent Category
+													<strong>required</strong>
+												</mat-error>
+												<mat-hint align="start">Please enter
+													<strong>Parent Category</strong>
+												</mat-hint>
+											</mat-form-field>
+										</div>
+									</div>
+								</div>
+
+								<div class="kt-form__group">
+									<div class="row">
+										<div class="col-md-12 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<textarea matInput rows="7" placeholder="Enter Description" formControlName="description"></textarea>
+											</mat-form-field>
+										</div>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+
+					<!--end::Form-->
+				</ng-template>
+			</mat-tab>
+		</mat-tab-group>
+	</kt-portlet-body>
+	<kt-portlet-header [class]="'kt-portlet__head--lg'" [viewLoading$]="loading$">
+		<ng-container ktPortletTools>
+			<a href="javascript:;" class="btn btn-primary kt-margin-r-10" color="primary" (click)="onSumbit(false)" mat-raised-button matTooltip="Save">
+				<span class="kt-hidden-mobile">Save</span>
+			</a>
+		</ng-container>
+	</kt-portlet-header>
+</kt-portlet>

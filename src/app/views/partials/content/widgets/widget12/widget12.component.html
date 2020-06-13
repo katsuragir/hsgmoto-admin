@@ -1,0 +1,93 @@
+<div class="kt-widget12">
+	<div class="kt-widget12__content" style="border-bottom: 1px solid #ebedf2;">
+		<div class="kt-widget12__item" style="margin-bottom: 2px;">
+			<div class="kt-widget12__info" *ngIf="desc === 'Last Month' && totalAmountlastmonth$ | async as total; else thismonth">
+				<span class="kt-widget12__desc">Total Amount of Last Month</span>
+				<span class="kt-widget12__value" *ngIf="total.pendapatan !== null">Rp. {{total.pendapatan}}</span>
+				<span class="kt-widget12__value" *ngIf="total.pendapatan === null">Rp. 0</span>
+			</div>
+
+			<ng-template #thismonth>
+				<div class="kt-widget12__info" *ngIf="totalAmount$ | async as total">
+					<span class="kt-widget12__desc">Total Amount of This Month</span>
+					<span class="kt-widget12__value" *ngIf="total.pendapatan !== null">Rp. {{total.pendapatan}}</span>
+					<span class="kt-widget12__value" *ngIf="total.pendapatan === null">Rp. 0</span>
+				</div>
+			</ng-template>
+			<!--
+			<div class="kt-widget12__info">
+				<span class="kt-widget12__desc">Date</span>
+				<span class="kt-widget12__value">{{ date | date: 'dd MMMM yyyy' }}</span>
+			</div>
+			-->
+		</div>
+		<!--
+		<div class="kt-widget12__item">
+			<div class="kt-widget12__info">
+				<span class="kt-widget12__desc">Avarage Revenue</span>
+				<span class="kt-widget12__value">$60M</span>
+			</div>
+			<div class="kt-widget12__info">
+				<span class="kt-widget12__desc">Revenue Margin</span>
+				<div class="kt-widget12__progress">
+					<div class="progress kt-progress--sm">
+						<div class="progress-bar bg-success" role="progressbar" style="width: 40%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+					</div>
+					<span class="kt-widget12__stat">40%</span>
+				</div>
+			</div>
+		</div>
+		-->
+	</div>
+	<div class="kt-widget12__chart" style="padding-top: 10px;">
+		<div class="kt-widget1" style="padding: unset;" >
+			<ng-container>
+				<div class="kt-widget1__item" style="padding: .6rem 0;">
+					<div class="kt-widget1__info">
+						<h3 class="kt-widget1__title">Visitor {{desc}}</h3>
+					</div>
+					<span *ngIf="desc === 'Today'" class="kt-widget1__number" style="color: darkgray;">{{date | date: 'dd MMMM yyyy'}}</span>
+					<span *ngIf="desc === 'This Month'" class="kt-widget1__number" style="color: darkgray;">{{month | date: 'MMMM yyyy'}}</span>
+					<span *ngIf="desc === 'Last Month'" class="kt-widget1__number" style="color: darkgray;">{{lastmonst | date: 'MMMM yyyy'}}</span>
+				</div>
+				<div class="kt-widget1__item" style="padding: .6rem 0;" *ngIf="totalallVisitor$ | async as all">
+					<div class="kt-widget1__info">
+						<h3 class="kt-widget1__title">Total </h3>
+					</div>
+					<span class="kt-widget1__number kt-font-brand" >{{all.visitor}}</span>
+				</div>
+				<div class="kt-widget1__item" style="padding: .6rem 0;" *ngIf="totalwindowsVisitor$ | async as all">
+					<div class="kt-widget1__info">
+						<h3 class="kt-widget1__title">Widows</h3>
+					</div>
+					<span class="kt-widget1__number kt-font-danger" >{{all.visitor}}</span>
+				</div>
+				<div class="kt-widget1__item" style="padding: .6rem 0;" *ngIf="totalandroidVisitor$ | async as all">
+					<div class="kt-widget1__info">
+						<h3 class="kt-widget1__title">Android</h3>
+					</div>
+					<span class="kt-widget1__number kt-font-success" >{{all.visitor}}</span>
+				</div>
+				<div class="kt-widget1__item" style="padding: .6rem 0;" *ngIf="totaliosVisitor$ | async as all">
+					<div class="kt-widget1__info">
+						<h3 class="kt-widget1__title">iOS</h3>
+					</div>
+					<span class="kt-widget1__number kt-font-yellow" >{{all.visitor}}</span>
+				</div>
+				<div class="kt-widget1__item" style="padding: .6rem 0;" *ngIf="totalmacVisitor$ | async as all">
+					<div class="kt-widget1__info">
+						<h3 class="kt-widget1__title">Mac</h3>
+					</div>
+					<span class="kt-widget1__number kt-font-purple" >{{all.visitor}}</span>
+				</div>
+				<div class="kt-widget1__item" style="padding: .6rem 0;" *ngIf="totalanotherVisitor$ | async as all">
+					<div class="kt-widget1__info">
+						<h3 class="kt-widget1__title">Other</h3>
+					</div>
+					<span class="kt-widget1__number kt-font-black" >{{all.visitor}}</span>
+				</div>
+			</ng-container>
+		</div>
+
+	</div>
+</div>

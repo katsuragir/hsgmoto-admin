@@ -1,0 +1,136 @@
+<kt-portlet>
+	<kt-portlet-header [title]="getComponentTitle()" [class]="'kt-portlet__head--lg'" [viewLoading$]="loading$">
+		<ng-container ktPortletTools>
+			<a href="javascript:;" class="btn btn-secondary kt-margin-r-10" (click)="backPage()" mat-raised-button matTooltip="Back to the discounts list">
+				<i class="la la-arrow-left"></i>
+				<span class="kt-hidden-mobile">Back</span>
+			</a>
+			<!--
+			<a href="javascript:;" class="btn btn-secondary kt-margin-r-10" (click)="reset()" [disabled]="selectedTab !== 0" mat-raised-button matTooltip="Reset changes">
+				<i class="la la-cog"></i>
+				<span class="kt-hidden-mobile">Reset</span>
+			</a>
+			-->
+		</ng-container>
+	</kt-portlet-header>
+	<kt-portlet-body>
+		<mat-tab-group [(selectedIndex)]="selectedTab" *ngIf="discount">
+			<mat-tab label="Basic info">
+				<ng-template matTabContent>
+					<div *ngIf="discount">
+						<!--begin::Form-->
+						<form [formGroup]="discountForm" class="kt-form kt-form--group-seperator-dashed">
+
+							<kt-alert *ngIf="hasFormErrors" type="warn" [showCloseButton]="true" [duration]="10000" (close)="onAlertClose($event)">
+								There Something Error in The Form, Please Check and Submit Again!
+							</kt-alert>
+							<kt-alert *ngIf="hasSlugErrors" type="warn" [showCloseButton]="true" [duration]="10000" (close)="onAlertClose($event)">
+								Oh snap! The Duplicate Slug Name.
+							</kt-alert>
+
+							<div class="kt-form__section kt-form__section--first">
+
+								<div class="kt-form__group">
+									<div class="row">
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<input matInput placeholder="Enter Kode Discount" formControlName="kode_disc">
+												<mat-error>
+													Kode Disc is
+													<strong>required</strong>
+												</mat-error>
+												<mat-hint align="start">Please enter
+													<strong>Kode Discount</strong>
+												</mat-hint>
+											</mat-form-field>
+										</div>
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field>
+												<input matInput [matDatepicker]="from" formControlName="from" placeholder="From date">
+												<mat-datepicker-toggle matSuffix [for]="from"></mat-datepicker-toggle>
+												<mat-datepicker #from></mat-datepicker>
+											</mat-form-field>
+										</div>
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field>
+												<input matInput [matDatepicker]="to" formControlName="to" placeholder="To date">
+												<mat-datepicker-toggle matSuffix [for]="to"></mat-datepicker-toggle>
+												<mat-datepicker #to></mat-datepicker>
+											</mat-form-field>
+										</div>
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<input matInput appMycurrency placeholder="Enter Discount" formControlName="discount">
+												<mat-error>
+													Discount is
+													<strong>required</strong>
+												</mat-error>
+												<mat-hint align="start">Please enter
+													<strong>Discount</strong>
+												</mat-hint>
+											</mat-form-field>
+										</div>
+									</div>
+								</div>
+
+								<div class="kt-form__group">
+									<div class="row">
+
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<div>Flag Discount:</div>
+											<mat-radio-group formControlName="flag" class="example-radio-group" style="display: inline-block;">
+												<mat-radio-button class="example-radio-button" value="Percent">Percent</mat-radio-button>
+												<mat-radio-button class="example-radio-button" value="Amount">Amount</mat-radio-button>
+											</mat-radio-group>
+										</div>
+
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<div>Status:</div>
+											<mat-radio-group formControlName="status" class="example-radio-group" style="display: inline-block;">
+												<mat-radio-button class="example-radio-button" value="1">Enable</mat-radio-button>
+												<mat-radio-button class="example-radio-button" value="0">Disable</mat-radio-button>
+											</mat-radio-group>
+										</div>
+
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<input matInput placeholder="Create By" formControlName="by">
+												<mat-error>
+													Create By is
+													<strong>required</strong>
+												</mat-error>
+												<mat-hint align="start">Please enter
+													<strong>Create By</strong>
+												</mat-hint>
+											</mat-form-field>
+										</div>
+
+									</div>
+								</div>
+
+								<div class="kt-form__group">
+									<div class="row">
+										<div class="col-md-12 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<textarea matInput rows="7" placeholder="Enter Description" formControlName="description"></textarea>
+											</mat-form-field>
+										</div>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+
+					<!--end::Form-->
+				</ng-template>
+			</mat-tab>
+		</mat-tab-group>
+	</kt-portlet-body>
+	<kt-portlet-header [class]="'kt-portlet__head--lg'" [viewLoading$]="loading$">
+		<ng-container ktPortletTools>
+			<a href="javascript:;" class="btn btn-primary kt-margin-r-10" color="primary" (click)="onSumbit(false)" mat-raised-button matTooltip="Save">
+				<span class="kt-hidden-mobile">Save</span>
+			</a>
+		</ng-container>
+	</kt-portlet-header>
+</kt-portlet>

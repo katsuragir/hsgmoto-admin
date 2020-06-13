@@ -1,0 +1,319 @@
+<kt-portlet>
+	<kt-portlet-header [title]="getComponentTitle()" [class]="'kt-portlet__head--lg'" [viewLoading$]="loading$">
+		<ng-container ktPortletTools>
+			<a [routerLink]="['../../']" class="btn btn-secondary kt-margin-r-10" mat-raised-button matTooltip="Back to the product list">
+				<i class="la la-arrow-left"></i>
+				<span class="kt-hidden-mobile">Back</span>
+			</a>
+		</ng-container>
+	</kt-portlet-header>
+	<kt-portlet-body>
+		<mat-tab-group [(selectedIndex)]="selectedTab" >
+			<mat-tab label="Basic Setting">
+				<ng-template matTabContent>
+					<div >
+						<!--begin::Form-->
+						<form *ngIf="barang$ |async" [formGroup]="barangForm" class="kt-form kt-form--group-seperator-dashed" enctype="multipart/form-data">
+
+							<kt-alert *ngIf="hasFormErrors" type="warn" [showCloseButton]="true" [duration]="10000" (close)="onAlertClose($event)">
+								Oh snap! Change a few things up and try submitting again.
+							</kt-alert>
+							<kt-alert *ngIf="imageOver" type="warn" [showCloseButton]="true" [duration]="10000" (close)="onAlertClose($event)">
+								Sorry! The image minimum is 1 and the image maximum is 5.
+							</kt-alert>
+							<kt-alert *ngIf="hasBrandErrors" type="warn" [showCloseButton]="true" [duration]="10000" (close)="onAlertClose($event)">
+								Oh snap! The brand not found, please add that brand first.
+							</kt-alert>
+							<kt-alert *ngIf="hasNameErrors" type="warn" [showCloseButton]="true" [duration]="10000" (close)="onAlertClose($event)">
+								Oh snap! Multiple name product.
+							</kt-alert>
+
+							<div class="kt-form__section kt-form__section--first">
+
+
+								<div class="kt-form__group">
+									<div class="row">
+										<p style="float: left; font-size: 12px; color: red;margin-bottom: unset; margin-left: 10px;">*Untuk sementara fitur update image ini akan di non aktifkan</p>
+										<div class="col-md-12 kt-margin-bottom-10-mobile">
+											<div class="product-image__drop-area" appDnd (fileDropped)="onFileDropped($event)" aria-disabled="false" style="position: relative;">
+												<div class="product-image__upload">
+													<div class="product-image__upload-title">
+														<span class="toggle-btn-symbol">+</span>
+														<span>Select Image Product</span>
+													</div>
+												</div>
+												<input accept="image/jpg,image/jpeg" type="file" #fileDropRef id="fileDropRef" multiple (change)="fileBrowseHandler($event.target.files)" autocomplete="off" style="position: relative; opacity: 0; width: 100%; height: 100%; z-index: 20;">
+											</div>
+											<div class="section-image" appDnd (fileDropped)="onFileDropped($event)">
+												<div style="position: relative; z-index: 999999;" cdkDropList cdkDropListOrientation="horizontal" class="section-row-image section-row-image-sortable" (cdkDropListDropped)="drop($event)">
+													<div *ngFor="let file of view | async" class="product-image__sortable" cdkDragBoundary=".section-row-image" cdkDragLockAxis="x" cdkDrag>
+														<div class="product-image__square" (mouseover)='file.hover = true' (mouseout)='file.hover = false' style="width: 100%;">
+															<img style="width: 100%; height: 100%; object-fit: scale-down;" src="{{file.images}}">
+															<span class="product-label__cover">Cover Image</span>
+															<div class="variant-image__overlay" [ngStyle]="{'opacity': file.hover ? '1' : '0'}">
+																<div class="variant-image__sort-handler"></div>
+																<span class="variant-image__overlay-tooltip">
+																	<span>Drag to change position</span>
+																</span>
+																<button class="variant-image__action variant-image__action-delete" (click)="deleteImage(file)">
+																	<span></span>
+																</button>
+															</div>
+														</div>
+													</div>
+												</div>
+												<div class="section-row-image">
+													<div class="product-image">
+														<div class="product-image__square product-image__placeholder main">
+															<div class="product-image__icon-container main">
+																<span class="product-image__icon"></span>
+																<span class="product-image__icon-text">Cover</span>
+															</div>
+														</div>
+													</div>
+													<div class="product-image">
+														<div class="product-image__square product-image__placeholder">
+															<div class="product-image__icon-container">
+																<span class="product-image__icon"></span>
+																<span class="product-image__icon-text">Variant</span>
+															</div>
+														</div>
+													</div>
+													<div class="product-image">
+														<div class="product-image__square product-image__placeholder">
+															<div class="product-image__icon-container">
+																<span class="product-image__icon"></span>
+																<span class="product-image__icon-text">Variant</span>
+															</div>
+														</div>
+													</div>
+													<div class="product-image">
+														<div class="product-image__square product-image__placeholder">
+															<div class="product-image__icon-container">
+																<span class="product-image__icon"></span>
+																<span class="product-image__icon-text">Variant</span>
+															</div>
+														</div>
+													</div>
+													<div class="product-image">
+														<div class="product-image__square product-image__placeholder">
+															<div class="product-image__icon-container">
+																<span class="product-image__icon"></span>
+																<span class="product-image__icon-text">Variant</span>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="section-row-text" style="margin-top: 45px;">
+												<div class="product-image__upload-text">
+													<span>or drag and drop up to 5 images at once.</span>
+												</div>
+											</div>
+										</div>
+
+									</div>
+								</div>
+
+								<div class="kt-form__group">
+									<div class="row">
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<input matInput placeholder="Barcode" formControlName="barcode">
+											</mat-form-field>
+										</div>
+
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<input matInput placeholder="Model" formControlName="model">
+											</mat-form-field>
+										</div>
+
+										<div class="col-md-6 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<input matInput placeholder="Name Product" formControlName="name" required>
+												<mat-error>
+													Name Product is
+													<strong>required</strong>
+												</mat-error>
+												<mat-hint align="start">
+													<strong>Required</strong>
+												</mat-hint>
+											</mat-form-field>
+										</div>
+									</div>
+								</div>
+
+								<div class="kt-form__group">
+									<div class="row">
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<mat-select placeholder="Category" formControlName="id_category">
+													<mat-option (click)="openDialog()">Add New Categories</mat-option>
+													<div *ngFor="let cat of category$ | async; let i = index;">
+														<mat-option disabled>{{i+1}}) {{cat.name}}</mat-option>
+
+														<div *ngIf="cat.items?.length">
+															<mat-option style="margin-left: 5%" *ngFor="let child of cat.items;let a = index;" value="{{child.id}}">{{i+1}}.{{a+1}}) {{child.name}}</mat-option>
+														</div>
+
+													</div>
+												</mat-select>
+												<mat-error>
+													Category
+													<strong>required</strong>
+												</mat-error>
+												<mat-hint align="start">
+													<strong>Required</strong>
+												</mat-hint>
+											</mat-form-field>
+										</div>
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<mat-select placeholder="Brand" formControlName="id_brand">
+													<!--<mat-option (click)="openDialog()">Add New Categories</mat-option>-->
+													<div *ngFor="let brand of brand; let i = index;">
+														<mat-option value="{{brand.id}}">{{i+1}}) {{brand.name}}</mat-option>
+													</div>
+												</mat-select>
+												<mat-error>
+													Brand
+													<strong>required</strong>
+												</mat-error>
+												<mat-hint align="start">
+													<strong>Required</strong>
+												</mat-hint>
+											</mat-form-field>
+										</div>
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<input matInput type="number" placeholder="Stock" formControlName="stock">
+												<mat-error>
+													Stock is
+													<strong>required</strong>
+												</mat-error>
+												<mat-hint align="start">
+													<strong>Required</strong>
+												</mat-hint>
+											</mat-form-field>
+										</div>
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<input appMycurrency matInput placeholder="Price" formControlName="price">
+												<span matPrefix>Rp.&nbsp;</span>
+												<mat-error>
+													Price is
+													<strong>required</strong>
+												</mat-error>
+												<mat-hint align="start">
+													<strong>Required</strong>
+												</mat-hint>
+											</mat-form-field>
+										</div>
+									</div>
+								</div>
+
+								<div class="kt-form__group">
+									<div class="row">
+										<div class="col-md-4 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<input matInput placeholder="Color" formControlName="color">
+											</mat-form-field>
+										</div>
+
+										<div class="col-md-4 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<input matInput type="text" placeholder="Size" formControlName="size">
+											</mat-form-field>
+										</div>
+
+										<div class="col-md-4 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<span matPrefix>https://www.youtube.com/watch?v=&nbsp;</span>
+												<input matInput type="text" placeholder="Youtube Code" formControlName="youtube">
+											</mat-form-field>
+										</div>
+
+									</div>
+								</div>
+
+								<div class="kt-form__group">
+									<div class="row">
+										<div class="col-md-4">
+											<div>Condition:</div>
+											<mat-radio-group  class="example-radio-group" style="display: inline-block;" formControlName="kondisi">
+													<mat-radio-button class="example-radio-button" value="Regular">Regular</mat-radio-button>
+													<mat-radio-button class="example-radio-button" value="BestSeller">Best Product</mat-radio-button>
+													<mat-radio-button class="example-radio-button" value="Feature">Feature Product</mat-radio-button>
+											</mat-radio-group>
+										</div>
+
+										<div class="col-md-3">
+											<div>Status:</div>
+											<mat-radio-group class="example-radio-group" style="display: inline-block;" formControlName="status">
+												<mat-radio-button class="example-radio-button" value="1">Enable</mat-radio-button>
+												<mat-radio-button class="example-radio-button" value="0">Disable</mat-radio-button>
+											</mat-radio-group>
+										</div>
+
+										<div class="col-md-2 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<div class="input-group">
+													<input matInput placeholder="Weight" formControlName="weight" class="form-control">
+													<div class="input-group-append">
+														<span class="input-group-text">G</span>
+													</div>
+												</div>
+												<mat-error>
+													Weight is
+													<strong>required</strong>
+												</mat-error>
+												<mat-hint align="start">
+													<strong>Required</strong>
+												</mat-hint>
+											</mat-form-field>
+										</div>
+										<div class="col-md-3 kt-margin-bottom-10-mobile">
+											<mat-form-field class="mat-form-field-fluid">
+												<textarea matInput #tags maxlength="150" formControlName="tags" rows="5" placeholder="Tags"></textarea>
+												<mat-hint align="end">{{tags.value?.length || 0}}/150</mat-hint>
+												<mat-hint align="start">
+													<strong>Format : Ricing,Pyramid,Sidi </strong>
+												</mat-hint>
+											</mat-form-field>
+										</div>
+									</div>
+								</div>
+
+								<div class="kt-form__group">
+									<div class="row">
+										<div class="col-md-12 kt-margin-bottom-10-mobile">
+											<mat-form-field class="example-full-width">
+												<textarea matInput #input maxlength="2000" formControlName="description" rows="15" placeholder="Description"></textarea>
+												<mat-hint align="end">{{input.value?.length || 0}}/2000</mat-hint>
+											</mat-form-field>
+											<!--<div>Description:</div>
+											<angular-editor formControlName="description" [config]="editorConfig"></angular-editor>-->
+										</div>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+
+					<!--end::Form-->
+				</ng-template>
+			</mat-tab>
+		</mat-tab-group>
+	</kt-portlet-body>
+	<kt-portlet-header [class]="'kt-portlet__head--lg'" [viewLoading$]="loading$">
+		<ng-container ktPortletTools>
+			<a href="javascript:;" class="btn btn-primary kt-margin-r-10" color="primary" (click)="onSave(false);" mat-raised-button matTooltip="Save">
+				<span class="kt-hidden-mobile">Save</span>
+			</a>
+			<a href="javascript:;" class="btn btn-primary kt-margin-r-10" color="primary" (click)="onSumbit(false);" mat-raised-button matTooltip="Save">
+				<span class="kt-hidden-mobile">Save & Exit</span>
+			</a>
+		</ng-container>
+	</kt-portlet-header>
+</kt-portlet>
